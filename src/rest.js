@@ -1,6 +1,12 @@
 import { useReducer, useEffect } from 'react';
 import Axios from 'axios';
 
+
+const INITIAL_STATE = {
+  loading: false,
+  data: {}
+};
+
 const reducer = (state, action) => {
 
   switch (action.type) {
@@ -25,11 +31,8 @@ const reducer = (state, action) => {
 
 const init = baseUrl => {
   const useGet = resource => {
-    const [data, dispatch] = useReducer(reducer, {
-      loading: true,
-      data: {}
-    });
-  
+    const [data, dispatch] = useReducer(reducer, INITIAL_STATE);
+
     useEffect(() => {
       dispatch({ type: 'REQUEST' });
       Axios.get(baseUrl + resource + '.json')
@@ -37,17 +40,14 @@ const init = baseUrl => {
           dispatch({ type: 'SUCCESS', payload: res.data });
         })
     }, [resource])
-  
+
     return data;
   }
 
   const usePost = resource => {
 
-    const [data, dispatch] = useReducer(reducer, {
-      loading: false,
-      data: {}
-    })
-  
+    const [data, dispatch] = useReducer(reducer, INITIAL_STATE)
+
     const post = data => {
       dispatch({ type: 'REQUEST' });
       Axios
@@ -56,17 +56,14 @@ const init = baseUrl => {
           dispatch({ type: 'SUCCESS', payload: res.data })
         })
     }
-  
+
     return [data, post];
   }
 
   const useDelete = () => {
 
-    const [data, dispatch] = useReducer(reducer, {
-      loading: false,
-      data: {}
-    })
-  
+    const [data, dispatch] = useReducer(reducer, INITIAL_STATE)
+
     const remove = resource => {
       dispatch({ type: 'REQUEST' });
       Axios
@@ -75,7 +72,7 @@ const init = baseUrl => {
           dispatch({ type: 'SUCCESS' })
         })
     }
-  
+
     return [data, remove];
   }
   return { useGet, usePost, useDelete };
