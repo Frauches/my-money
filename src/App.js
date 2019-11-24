@@ -2,32 +2,75 @@ import React from 'react';
 import Rest from './rest';
 
 const baseUrl = "https://mymoney-3ea9b.firebaseio.com";
+const { useGet, usePost, useDelete } = Rest(baseUrl);
 
 function App() {
 
-  const { useGet, usePost, useDelete } = Rest(baseUrl);
-  const data = useGet("/movimentacoes/2019-10");
-  const [postData, post] = usePost("/movimentacoes/2019-10");
-  const [deleteData, remove] = useDelete();
+  const data = useGet("/meses");
+  // const [postData, post] = usePost("/movimentacoes/2019-10");
+  // const [deleteData, remove] = useDelete();
 
   const saveData = () => {
-    post({ valor: 7, descricao: 'Coxinha com Catupiry' });
+    // post({ valor: 7, descricao: 'Coxinha com Catupiry' });
   }
 
   const doRemove = () => {
-    remove('/movimentacoes/2019-10/-LtbKck_33JdJqonlEII');
+    // remove('/movimentacoes/2019-10/-LtbKck_33JdJqonlEII');
   }
 
   return (
     <div>
-      <h1>My Money</h1>
+      <nav className="nav navbar-light bg-light">
+        <div className="container">
+          <a href="/" className="navbar-brand">My Money</a>
+        </div>
+      </nav>
 
-      {data.loading ? <p>Loading...</p> : <p>{JSON.stringify(data)}</p>}
+      <div className="container">
+        <h2>Adicionar Mês</h2>
+        <select>
+          <option value="2019">2019</option>
+          <option value="2020">2020</option>
+        </select>
 
-      <button onClick={saveData}>Salvar</button>
-      <pre>{JSON.stringify(postData)}</pre>
-      <button onClick={doRemove}>Delete</button>  
-      <pre>{JSON.stringify(deleteData)}</pre>
+        <select>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </select>
+        <button>Adicionar Mês</button>
+
+        {
+          data.loading ? <span>Carregando...</span> : (
+            <table className="table table-striped">
+              <thead>
+                <th>Mês</th>
+                <th>Previsão de Entrada</th>
+                <th>Entrada</th>
+                <th>Previsão de Saída</th>
+                <th>Saída</th>
+              </thead>
+              <tbody>
+                {
+                  Object
+                    .keys(data.data)
+                    .map(mes => {
+                      return (
+                        <tr key={mes}>
+                          <td>{mes}</td>
+                          <td>{data.data[mes].previsao_entrada}</td>
+                          <td>{data.data[mes].entradas}</td>
+                          <td>{data.data[mes].previsao_saida}</td>
+                          <td>{data.data[mes].saidas}</td>
+                        </tr>
+                      )
+                    })
+                }
+                <tr></tr>
+              </tbody>
+            </table>
+          )
+        }
+      </div>
     </div>
   );
 }
