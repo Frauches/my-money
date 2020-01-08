@@ -1,17 +1,18 @@
 import React from 'react';
 import Header from './components/Header';
-import Meses from './Meses';
-import AdicionarMes from './AdicionarMes';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Movimentacoes from './pages/Movimentacoes';
 
 function App() {
   return (
-    <div>
-      <Header />
-      <div className="container">
-        <AdicionarMes />
-        <Meses />
+    <Router>
+      <div>
+        <Header />
+        <Route path="/" exact component={Home} />
+        <Route path="/movimentacoes/:data" component={Movimentacoes} />
       </div>
-    </div>
+    </Router>
   );
 }
 
