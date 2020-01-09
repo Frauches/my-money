@@ -16,11 +16,13 @@ const Meses = () => {
     return (
       <table className="table table-striped">
         <thead>
-          <th>Mês</th>
-          <th>Previsão de Entrada</th>
-          <th>Entrada</th>
-          <th>Previsão de Saída</th>
-          <th>Saída</th>
+          <tr>
+            <th>Mês</th>
+            <th>Previsão de Entrada</th>
+            <th>Entrada</th>
+            <th>Previsão de Saída</th>
+            <th>Saída</th>
+          </tr>
         </thead>
         <tbody>
           {
