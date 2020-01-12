@@ -40,7 +40,6 @@ const Meses = () => {
                 )
               })
           }
-          <tr></tr>
         </tbody>
       </table>
     )

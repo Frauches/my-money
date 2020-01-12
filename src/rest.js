@@ -32,29 +32,27 @@ const reducer = (state, action) => {
 const init = baseUrl => {
   const useGet = resource => {
     const [data, dispatch] = useReducer(reducer, INITIAL_STATE);
+    const carregar = async () => {
+      dispatch({ type: 'REQUEST' });
+      const res = await Axios.get(baseUrl + resource + '.json')
+      dispatch({ type: 'SUCCESS', payload: res.data });
+    }
 
     useEffect(() => {
-      dispatch({ type: 'REQUEST' });
-      Axios.get(baseUrl + resource + '.json')
-        .then(res => {
-          dispatch({ type: 'SUCCESS', payload: res.data });
-        })
+      carregar();
     }, [resource])
 
-    return data;
+    return { ...data, refetch: carregar };
   }
 
   const usePost = resource => {
 
     const [data, dispatch] = useReducer(reducer, INITIAL_STATE)
 
-    const post = data => {
+    const post = async data => {
       dispatch({ type: 'REQUEST' });
-      Axios
-        .post(baseUrl + resource + '.json', data)
-        .then(res => {
-          dispatch({ type: 'SUCCESS', payload: res.data })
-        })
+      const res = await Axios.post(baseUrl + resource + '.json', data);
+      dispatch({ type: 'SUCCESS', payload: res.data });
     }
 
     return [data, post];
@@ -64,13 +62,10 @@ const init = baseUrl => {
 
     const [data, dispatch] = useReducer(reducer, INITIAL_STATE)
 
-    const remove = resource => {
+    const remove = async resource => {
       dispatch({ type: 'REQUEST' });
-      Axios
-        .delete(baseUrl + resource + '.json', data)
-        .then(() => {
-          dispatch({ type: 'SUCCESS' })
-        })
+      await Axios.delete(baseUrl + resource + '.json', data)
+      dispatch({ type: 'SUCCESS' })
     }
 
     return [data, remove];
