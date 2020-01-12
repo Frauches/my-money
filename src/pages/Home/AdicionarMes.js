@@ -1,20 +1,54 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
+import { Redirect } from 'react-router-dom';
 
 const AdicionarMes = () => {
+  const anoMinimo = 2019;
+  const anoMaximo = 2022;
+  const refAno = useRef();
+  const refMes = useRef();
+  const [redir, setRedir] = useState('');
+
+  const anos = [];
+  const meses = [];
+
+  for (let i = anoMinimo; i <= anoMaximo; i++) {
+    anos.push(i);
+  }
+
+  for (let i = 1; i <= 12; i++) {
+    meses.push(i);
+  }
+
+  const zeroPad = (num) => {
+    if (num < 10) {
+      return '0' + num;
+    }
+    return num;
+  }
+
+  const visualizarMes = () => {
+    setRedir(refAno.current.value + '-' + refMes.current.value);
+  }
+
+  if (redir !== '') {
+    return <Redirect to={`/movimentacoes/${redir}`}/>
+  }
 
   return (
     <>
       <h2>Adicionar Mês</h2>
-      <select>
-        <option value="2019">2019</option>
-        <option value="2020">2020</option>
+      <select ref={refAno}>
+        {
+          anos.map(ano => <option value={ano}>{ano}</option>)
+        }
       </select>
 
-      <select>
-        <option value="11">11</option>
-        <option value="12">12</option>
+      <select ref={refMes}>
+        {
+          meses.map(zeroPad).map(mes => <option value={mes}>{mes}</option>)
+        }
       </select>
-      <button>Adicionar Mês</button>
+      <button onClick={visualizarMes}>Adicionar Mês</button>
     </>
   );
 }
