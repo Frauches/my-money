@@ -6,9 +6,11 @@ const baseUrl = "https://mymoney-3ea9b.firebaseio.com";
 const { useGet, usePost, useDelete } = Rest(baseUrl);
 
 const Movimentacoes = ({ match }) => {
-  const data = useGet(`/movimentacoes/${match.params.data}`);
-  const [postData, salvar] = usePost(`/movimentacoes/${match.params.data}`);
-  const [removerData, remover] = useDelete();
+
+  const movimentacoes = useGet(`/movimentacoes/${match.params.data}`);
+  const [postData, salvarNovaMovimentacao] = usePost(`/movimentacoes/${match.params.data}`);
+  const [removerData, removerMovimentacao] = useDelete();
+
   const [descricao, setDescricao] = useState('');
   const [valor, setValor] = useState(0);
 
@@ -22,30 +24,30 @@ const Movimentacoes = ({ match }) => {
 
   const salvarMovimentacao = async () => {
     if (!isNaN(valor) && descricao.length > 0 && valor.search(/^[-]?\d+(\.)?\d+?$/ >= 0)) {
-      await salvar({
+      await salvarNovaMovimentacao({
         descricao,
         valor
       })
       setDescricao('');
       setValor(0);
-      data.refetch();
+      movimentacoes.refetch();
     }
   }
 
-  const removerMovimentacao = async (id) => {
-    await remover(`/movimentacoes/${match.params.data}/${id}`);
-    data.refetch();
+  const removerMovimentacaoClick = async (id) => {
+    await removerMovimentacao(`/movimentacoes/${match.params.data}/${id}`);
+    movimentacoes.refetch();
   }
 
-  console.log(data);
-  if(data.error && data.status === 401){
+  console.log(movimentacoes);
+  if(movimentacoes.error && movimentacoes.status === 401){
     return <Redirect to="/login" />
   }
 
   return (
     <>
       <h1>Movimentacoes</h1>
-      {data.loading && <span>Carregando...</span>}
+      {movimentacoes.loading && <span>Carregando...</span>}
       <table className="table table-striped">
         <thead>
           <tr>
@@ -55,18 +57,18 @@ const Movimentacoes = ({ match }) => {
           </tr>
         </thead>
         <tbody>
-          {data.data && (
+          {movimentacoes.data && (
             Object
-              .keys(data.data)
+              .keys(movimentacoes.data)
               .map(movimentacao => {
                 return (
                   <tr key={movimentacao}>
-                    <td>{data.data[movimentacao].descricao}</td>
+                    <td>{movimentacoes.data[movimentacao].descricao}</td>
                     <td className="text-right">
-                      {data.data[movimentacao].valor}
+                      {movimentacoes.data[movimentacao].valor}
                     </td>
                     <td>
-                      <button className="btn btn-danger" onClick={() => removerMovimentacao(movimentacao)}>-</button>
+                      <button className="btn btn-danger" onClick={() => removerMovimentacaoClick(movimentacao)}>-</button>
                     </td>
                   </tr>
                 )
