@@ -1,10 +1,13 @@
 import Axios from "axios";
 import { useEffect, useReducer } from "react";
 
+Axios.defaults.validateStatus = code => code < 500;
+
 const INITIAL_STATE = {
   loading: false,
   data: {},
-  error: ""
+  error: "",
+  status: ""
 };
 
 const reducer = (state, action) => {
@@ -26,7 +29,8 @@ const reducer = (state, action) => {
       return {
         ...state,
         loading: false,
-        error: action.payload
+        error: action.payload,
+        status: action.status
       };
 
     default:
@@ -41,9 +45,13 @@ const init = baseUrl => {
       dispatch({ type: "REQUEST" });
       try {
         const res = await Axios.get(baseUrl + resource + ".json");
-        dispatch({ type: "SUCCESS", payload: res.data });
+        if (res.data.error && Object.keys(res.data.error).length > 0) {
+          dispatch({ type: "FAILURE", payload: res.data.error, status: res.status });
+        } else {
+          dispatch({ type: "SUCCESS", payload: res.data });
+        }
       } catch (error) {
-        dispatch({ type: "FAILURE", payload: 'error loading data' });
+        dispatch({ type: "FAILURE", payload: "error loading data" });
       }
     };
 
@@ -88,7 +96,11 @@ export const usePost = resource => {
     dispatch({ type: "REQUEST" });
     try {
       const res = await Axios.post(resource, data);
-      dispatch({ type: "SUCCESS", payload: res.data });
+      if (res.data.error && Object.keys(res.data.error).length > 0) {
+        dispatch({ type: "FAILURE", payload: res.data.error.message });
+      } else {
+        dispatch({ type: "SUCCESS", payload: res.data });
+      }
       return res.data;
     } catch (error) {
       console.log(JSON.stringify(error));

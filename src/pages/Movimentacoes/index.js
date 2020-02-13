@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import Rest from '../../rest';
 
 const baseUrl = "https://mymoney-3ea9b.firebaseio.com";
@@ -34,6 +35,11 @@ const Movimentacoes = ({ match }) => {
   const removerMovimentacao = async (id) => {
     await remover(`/movimentacoes/${match.params.data}/${id}`);
     data.refetch();
+  }
+
+  console.log(data);
+  if(data.error && data.status === 401){
+    return <Redirect to="/login" />
   }
 
   return (
