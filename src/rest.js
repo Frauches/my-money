@@ -3,7 +3,8 @@ import { useEffect, useReducer } from "react";
 
 const INITIAL_STATE = {
   loading: false,
-  data: {}
+  data: {},
+  error: ""
 };
 
 const reducer = (state, action) => {
@@ -21,6 +22,13 @@ const reducer = (state, action) => {
         data: action.payload
       };
 
+    case "FAILURE":
+      return {
+        ...state,
+        loading: false,
+        error: action.payload
+      };
+
     default:
       return state;
   }
@@ -31,8 +39,12 @@ const init = baseUrl => {
     const [data, dispatch] = useReducer(reducer, INITIAL_STATE);
     const carregar = async () => {
       dispatch({ type: "REQUEST" });
-      const res = await Axios.get(baseUrl + resource + ".json");
-      dispatch({ type: "SUCCESS", payload: res.data });
+      try {
+        const res = await Axios.get(baseUrl + resource + ".json");
+        dispatch({ type: "SUCCESS", payload: res.data });
+      } catch (error) {
+        dispatch({ type: "FAILURE", payload: 'error loading data' });
+      }
     };
 
     useEffect(() => {
@@ -74,9 +86,14 @@ export const usePost = resource => {
   const [data, dispatch] = useReducer(reducer, INITIAL_STATE);
   const post = async data => {
     dispatch({ type: "REQUEST" });
-    const res = await Axios.post(resource, data);
-    dispatch({ type: "SUCCESS", payload: res.data });
-    return res.data;
+    try {
+      const res = await Axios.post(resource, data);
+      dispatch({ type: "SUCCESS", payload: res.data });
+      return res.data;
+    } catch (error) {
+      console.log(JSON.stringify(error));
+      dispatch({ type: "FAILURE", payload: "SIGIN ERROR" });
+    }
   };
 
   return [data, post];

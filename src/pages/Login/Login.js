@@ -8,7 +8,7 @@ const Login = () => {
 
   useEffect(() => {
     if(Object.keys(postData.data).length > 0)
-      alert('logou, viado');
+      alert('logou');
   }, [postData]);
   const login = async () => {
     await signin({
